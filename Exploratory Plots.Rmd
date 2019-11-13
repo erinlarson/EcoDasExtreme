@@ -7,20 +7,55 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+require(ggplot2)
+require(dplyr)
 ```
 
 Importing data.
 
 ```{r data}
 EEdata<-read.csv("EEData.csv")
-summary(EEdata)
 ```
 
-Manipulating data
 
 ```{r datamanip}
 EEdata_min<-EEdata[, 1:47]
-levels(EEdata_min$BiologicalResponse_OrganismalGroup)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Manipulating data to only include rows that have Biological response info.
+```{r datamaniponlyBio}
+EEdata_Bio<-subset(EEdata_min, BiologicalResponse_OrganismalGroup!="")
+EEdata_Phys<-subset(EEdata_min, PhysicalResponseCategory!="")
+EEdata_Chem<-subset(EEdata_min, ChemicalResponse_Category!="")
+EEdata_BioPhys<-subset(EEdata_min, BiologicalResponse_OrganismalGroup!="" & PhysicalResponseCategory!="")
+EEdata_BioChem<-subset(EEdata_min, BiologicalResponse_OrganismalGroup!="" & ChemicalResponse_Category!="")
+EEdata_PhysChem<-subset(EEdata_min, PhysicalResponseCategory!="" & ChemicalResponse_Category!="")
+EEdata_BioPhysChem<-subset(EEdata_min, BiologicalResponse_OrganismalGroup!="" & PhysicalResponseCategory!="" & ChemicalResponse_Category!="")
+```
+
+Counting number of studies that had biological, chemical, and physical responses.
+```{r response}
+EE_responsetype<-data.frame(ResponseType=c("All Studies", "Biological", "Physical", "Chemical", "Biological & Physical", "Biological & Chemical", "Physical & Chemical", "Biological, Physical & Chemical"))
+EE_responsetype$Count[1]<-nrow(distinct(EEdata_min, UniqueAccession, .keep_all=TRUE))
+EE_responsetype$Count[2]<-nrow(distinct(EEdata_Bio, UniqueAccession, .keep_all=TRUE))
+EE_responsetype$Count[3]<-nrow(distinct(EEdata_Phys, UniqueAccession, .keep_all=TRUE))
+EE_responsetype$Count[4]<-nrow(distinct(EEdata_Chem, UniqueAccession, .keep_all=TRUE))
+EE_responsetype$Count[5]<-nrow(distinct(EEdata_BioPhys, UniqueAccession, .keep_all=TRUE))
+EE_responsetype$Count[6]<-nrow(distinct(EEdata_BioChem, UniqueAccession, .keep_all=TRUE))
+EE_responsetype$Count[7]<-nrow(distinct(EEdata_PhysChem, UniqueAccession, .keep_all=TRUE))
+EE_responsetype$Count[8]<-nrow(distinct(EEdata_BioPhysChem, UniqueAccession, .keep_all=TRUE))
+```
+
+Making a plot of the number of studies that have looked at each type of response variable (biological, physical, chemical)
+```{r responsetypesplot}
+responseplot<-ggplot(EE_responsetype, aes(x=ResponseType, y=Count))+geom_bar(stat="identity")+theme(axis.text.x=element_text(angle=20))
+
+responseplot
+```
+
+```{r plot of different organismal groups studied}
+EEdatasum <- EEdata_Bio %>%
+    group_by(UniqueAccession, BiologicalResponse_OrganismalGroup) %>%
+    summarize(count = n())
+EEdatasum
+```
