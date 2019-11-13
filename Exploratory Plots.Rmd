@@ -98,7 +98,7 @@ bioresponseplot
 
 ```
 
-```{r plot of bioresponses studied}
+```{r plot of broad bio measures studied}
 EEBioResponse$BroadMeasureType <- factor(rep(NA,length(EEBioResponse$BiologicalResponseMeasured)),
                                    levels=c("biomass", "abundance/density", "movement", "community structure", "community function", "reproduction", "individual condition", "evolutionary response"))
 
