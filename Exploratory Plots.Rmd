@@ -48,7 +48,7 @@ EE_responsetype$Count[8]<-nrow(distinct(EEdata_BioPhysChem, UniqueAccession, .ke
 
 Making a plot of the number of studies that have looked at each type of response variable (biological, physical, chemical)
 ```{r responsetypesplot}
-responseplot<-ggplot(EE_responsetype, aes(x=ResponseType, y=Count))+geom_bar(stat="identity")+theme(axis.text.x=element_text(angle=20))
+responseplot<-ggplot(EE_responsetype, aes(x=ResponseType, y=Count))+geom_bar(stat="identity")+theme_bw()+theme(axis.text.x=element_text(angle=90))
 
 responseplot
 ```
@@ -56,6 +56,71 @@ responseplot
 ```{r plot of different organismal groups studied}
 EEdatasum <- EEdata_Bio %>%
     group_by(UniqueAccession, BiologicalResponse_OrganismalGroup) %>%
-    summarize(count = n())
-EEdatasum
+    summarize()
+
+EEBioGroup <- EEdatasum %>%
+    group_by(BiologicalResponse_OrganismalGroup) %>%
+    summarize(count=n())
+
+biogroupplot<-ggplot(EEBioGroup, aes(x=BiologicalResponse_OrganismalGroup, y=count))+geom_bar(stat="identity")+theme_bw()+theme(axis.text.x=element_text(angle=90))
+
+biogroupplot
+
+```
+```{r plot of trophic levels studied}
+EEtrophicsum <- EEdata_Bio %>%
+    group_by(UniqueAccession, BiologicalResponse_TrophicLevel) %>%
+    summarize()
+
+EETrophic <- EEtrophicsum %>%
+    group_by(BiologicalResponse_TrophicLevel) %>%
+    summarize(count=n())
+
+trophicplot<-ggplot(EETrophic, aes(x=BiologicalResponse_TrophicLevel, y=count))+geom_bar(stat="identity")+theme_bw()+theme(axis.text.x=element_text(angle=90))
+
+trophicplot
+
+```
+
+This creates an overwhelming plot... 
+```{r plot of bioresponses studied}
+EEBioResponse <- EEdata_Bio %>%
+    group_by(UniqueAccession, BiologicalResponseMeasured) %>%
+    summarize()
+
+EEBioMeasure <- EEBioResponse %>%
+    group_by(BiologicalResponseMeasured) %>%
+    summarize(count=n())
+
+bioresponseplot<-ggplot(EEBioMeasure, aes(x=BiologicalResponseMeasured, y=count))+geom_bar(stat="identity")+theme_bw()+theme(axis.text.x=element_text(angle=90))
+
+bioresponseplot
+
+```
+
+```{r plot of bioresponses studied}
+EEBioResponse$BroadMeasureType <- factor(rep(NA,length(EEBioResponse$BiologicalResponseMeasured)),
+                                   levels=c("biomass", "abundance/density", "movement", "community structure", "community function", "reproduction", "individual condition", "evolutionary response"))
+
+EEBioResponse$BroadMeasureType[EEBioResponse$BiologicalResponseMeasured %in% c("annual biomass","aboveground biomass","belowground biomass","biomass","summer biomass", "EVI")] <- "biomass"
+
+EEBioResponse$BroadMeasureType[EEBioResponse$BiologicalResponseMeasured %in% c("abundance","annual abundance", "catches or landings", "density", "percent occurrence", "occupancy rate", "percent cover", "summer abundance", "annual Year of Young", "summer Year of Young", "population size structure")] <- "abundance/density"
+
+EEBioResponse$BroadMeasureType[EEBioResponse$BiologicalResponseMeasured %in% c("behavior - movement", "colonization rate")] <- "movement"
+
+EEBioResponse$BroadMeasureType[EEBioResponse$BiologicalResponseMeasured %in% c("annual evenness", "annual richness", "diversity", "functional beta diversity", "functional community structure","phenotypic diversity", "species evenness", "species richness", "summer evenness", "summer richness", "taxonomic beta diversity", "taxonomic diversity", "taxonomic richness", "macroinvertebrate community index", "community composition", "foodweb structure",  "taxonomic community structure")] <- "community structure"
+
+EEBioResponse$BroadMeasureType[EEBioResponse$BiologicalResponseMeasured %in% c("carbon assimilation", "stability and persistence")] <- "community function"
+
+EEBioResponse$BroadMeasureType[EEBioResponse$BiologicalResponseMeasured %in% c( "male survival", "reproduction - nest quantity", "reproduction - ovulation rate", "reproduction - young survival" )] <- "reproduction"
+
+EEBioResponse$BroadMeasureType[EEBioResponse$BiologicalResponseMeasured %in% c("body condition", "diet", "growth",  "infection rate", "leaf carbon isotope ratio", "metabolism", "mortality", "ratio of leaf chlorophyl a:b", "rhizome starch levels", "rhizome sugar level", "seawater readiness", "stomach fullness", "stress - cortisol level", "total leaf chlorophyl"   )] <- "individual condition"
+
+EEBioResponse$BroadMeasureType[EEBioResponse$BiologicalResponseMeasured %in% c("extinction rate")] <- "evolutionary response"
+
+##getting unique studies so not double-counting the broad measure type
+EEBioMeasureUnique<-distinct_at(EEBioResponse, vars(UniqueAccession, BroadMeasureType))
+
+broadbiomeasureplot<-ggplot(EEBioMeasureUnique, aes(x=BroadMeasureType))+geom_bar()+theme_bw()+theme(axis.text.x=element_text(angle=90))
+broadbiomeasureplot
 ```
