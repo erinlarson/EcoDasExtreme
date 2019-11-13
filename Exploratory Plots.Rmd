@@ -9,20 +9,18 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+Importing data.
 
-
-
-```{r cars}
-summary(cars)
+```{r data}
+EEdata<-read.csv("EEData.csv")
+summary(EEdata)
 ```
 
-## Including Plots
+Manipulating data
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r datamanip}
+EEdata_min<-EEdata[, 1:47]
+levels(EEdata_min$BiologicalResponse_OrganismalGroup)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
