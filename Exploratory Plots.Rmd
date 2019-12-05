@@ -125,7 +125,7 @@ broadbiomeasureplot<-ggplot(EEBioMeasureUnique, aes(x=BroadMeasureType))+geom_ba
 broadbiomeasureplot
 ```
 
-```{r plot of broad bio measures studied}
+```{r plot of levels of bio org studied}
 EEBioResponse$OrgLevel <- factor(rep(NA,length(EEBioResponse$BiologicalResponseMeasured)),
                                    levels=c("population", "community", "ecosystem"))
 

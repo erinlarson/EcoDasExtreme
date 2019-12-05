@@ -95,7 +95,7 @@ This creates an overwhelming plot...
 
 ``` r
 EEBioResponse <- EEdata_Bio %>%
-    group_by(UniqueAccession, BiologicalResponseMeasured) %>%
+    group_by(UniqueAccession, BiologicalResponseMeasured, BiologicalResponse_Significance, ProximateEvent_Type) %>%
     summarize()
 
 EEBioMeasure <- EEBioResponse %>%
@@ -137,3 +137,23 @@ broadbiomeasureplot
 ```
 
 ![](Exploratory_Plots_files/figure-markdown_github/plot%20of%20broad%20bio%20measures%20studied-1.png)
+
+``` r
+EEBioResponse$OrgLevel <- factor(rep(NA,length(EEBioResponse$BiologicalResponseMeasured)),
+                                   levels=c("population", "community", "ecosystem"))
+
+EEBioResponse$OrgLevel[EEBioResponse$BiologicalResponseMeasured %in% c("annual biomass","aboveground biomass","belowground biomass","biomass","summer biomass", "EVI")] <- "ecosystem"
+
+EEBioResponse$OrgLevel[EEBioResponse$BiologicalResponseMeasured %in% c("abundance","annual abundance", "catches or landings", "density", "percent occurrence", "occupancy rate", "percent cover", "summer abundance", "annual Year of Young", "summer Year of Young", "population size structure",  "male survival", "reproduction - nest quantity", "reproduction - ovulation rate", "reproduction - young survival", "body condition", "diet", "growth",  "infection rate", "leaf carbon isotope ratio", "metabolism", "mortality", "ratio of leaf chlorophyl a:b", "rhizome starch levels", "rhizome sugar level", "seawater readiness", "stomach fullness", "stress - cortisol level", "total leaf chlorophyl", "behavior - movement", "carbon assimilation")] <- "population"
+
+
+EEBioResponse$OrgLevel[EEBioResponse$BiologicalResponseMeasured %in% c("annual evenness", "annual richness", "diversity", "functional beta diversity", "functional community structure","phenotypic diversity", "species evenness", "species richness", "summer evenness", "summer richness", "taxonomic beta diversity", "taxonomic diversity", "taxonomic richness", "macroinvertebrate community index", "community composition", "foodweb structure",  "taxonomic community structure", "stability and persistence", "colonization rate", "extinction rate")] <- "community"
+
+##getting unique studies so not double-counting the broad measure type
+EEOrgLevelUnique<-distinct_at(EEBioResponse, vars(UniqueAccession, OrgLevel, BiologicalResponse_Significance, ProximateEvent_Type))
+
+orglevelplot<-ggplot(EEOrgLevelUnique, aes(x=OrgLevel, fill=BiologicalResponse_Significance))+geom_bar()+theme_bw()+theme(axis.text.x=element_text(angle=90))+xlab("Level of Biological Organization")+ylab("Number of Studies")
+orglevelplot+facet_wrap(~ProximateEvent_Type)
+```
+
+![](Exploratory_Plots_files/figure-markdown_github/plot%20of%20levels%20of%20bio%20org%20studied-1.png)
