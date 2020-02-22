@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+require(tidyverse)
 ```
 
 ## R Markdown
@@ -15,16 +16,34 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+```{r dataread}
+EEdata<-read.csv("EEData.csv")
 ```
 
+```{r data manip}
+EEdata$Type_system_broad <- factor(rep(NA,length(EEdata$Type_system)),
+                                   levels=c("freshwater","coastal","marine"))
+EEdata$Type_system_broad[EEdata$Type_system %in% c("catchment/watershed","floodplain","lake","pond","stream/river","wetland")] <- "freshwater"
+EEdata$Type_system_broad[EEdata$Type_system %in% c("estuary","lagoon","marine intertidal")] <- "coastal" 
+# question if "coastal ocean" is coastal or marine - the only paper in this category looked at subtidal algae beds
+EEdata$Type_system_broad[EEdata$Type_system %in% c("coastal ocean","deep sea","open ocean")] <- "marine"
+# given there are so few marine events, maybe better to combine coastal and marine categories
+
+EEdata$ProximateEvent_Type_broad <- factor(rep(NA,length(EEdata$ProximateEvent_Type)),
+                                           levels=c("Flood","Drought","Heatwave","Other"))
+EEdata$ProximateEvent_Type_broad[EEdata$ProximateEvent_Type %in% c("Flood")] <- "Flood"
+EEdata$ProximateEvent_Type_broad[EEdata$ProximateEvent_Type %in% c("Drought")] <- "Drought"
+EEdata$ProximateEvent_Type_broad[EEdata$ProximateEvent_Type %in% c("Heatwave")] <- "Heatwave"
+EEdata$ProximateEvent_Type_broad[is.na(EEdata$ProximateEvent_Type_broad)] <- "Other"
+```
 ## Including Plots
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r data summarize, echo=FALSE}
+EEdatasum <- EEdata_min %>%
+    group_by(UniqueAccession, Type_system, ProximateEvent_Type, BiologicalResponseMeasured, PhysicalResponse_ParameterMeasured, ChemicalResponse_ElementMaterial_Measured) %>%
+    summarize()
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
