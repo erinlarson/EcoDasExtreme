@@ -11,12 +11,6 @@ require(tidyverse)
 require(alluvial)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
 ```{r dataread}
 EEdata<-read.csv("EEData.csv")
 ```
@@ -99,14 +93,3 @@ EEdata_norepeat <- EEdata_simple %>%
     group_by(UniqueAccession, ProximateEvent_Type_broad, Type_system_broad, OrgLevel, PhysBroadType, ChemBroadType) %>%
     summarize()
 ```
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r data summarize, echo=FALSE}
-EEdatasum <- EEdata_min %>%
-    group_by(UniqueAccession, Type_system, ProximateEvent_Type, BiologicalResponseMeasured, PhysicalResponse_ParameterMeasured, ChemicalResponse_ElementMaterial_Measured) %>%
-    summarize()
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
