@@ -12,7 +12,7 @@ require(alluvial)
 ```
 
 ```{r dataread}
-EEdata<-read.csv("EEData.csv")
+EEdata<-read.csv("EEData.csv", fileEncoding="latin1")
 ```
 
 Manipulating the system type and event type.
@@ -47,6 +47,7 @@ EEdata$OrgLevel[EEdata$BiologicalResponseMeasured %in% c("annual evenness", "ann
 
 ```
 
+Manipulating the physical response variable.
 ```{r physmanip}
 EEdata$PhysBroadType <- factor(rep(NA,length(EEdata$PhysicalResponseMeasured)),
                                    levels=c("Temperature", "Sediment Movement", "Water Movement", "Water Quality (DO, pH, Conductivity, Salinity, Clarity)", "Sediment Quality", "Nutrients (C,N,P,Si)"))
@@ -65,7 +66,7 @@ EEdata$PhysBroadType [EEdata$PhysicalResponseMeasured %in% c("N-NH4","N-NO2","N-
 
 ```
 
-
+Manipulating the chemical response variable.
 ```{r chemmanip}
 EEdata$ChemBroadType <- factor(rep(NA,length(EEdata$ChemicalResponse_ElementMaterial_Measured)),
                                    levels=c("Temperature", "Sediment Movement", "Water Movement", "Water Quality (DO, pH, Conductivity, Salinity, Clarity)", "Sediment Quality", "Nutrients (C,N,P,Si)"))
