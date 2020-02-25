@@ -20,7 +20,8 @@ When you click the **Knit** button a document will be generated that includes bo
 EEdata<-read.csv("EEData.csv")
 ```
 
-```{r data manip}
+Manipulating the system type and event type.
+```{r eventinfo}
 EEdata$Type_system_broad <- factor(rep(NA,length(EEdata$Type_system)),
                                    levels=c("freshwater","coastal","marine"))
 EEdata$Type_system_broad[EEdata$Type_system %in% c("catchment/watershed","floodplain","lake","pond","stream/river","wetland")] <- "freshwater"
@@ -36,6 +37,25 @@ EEdata$ProximateEvent_Type_broad[EEdata$ProximateEvent_Type %in% c("Drought")] <
 EEdata$ProximateEvent_Type_broad[EEdata$ProximateEvent_Type %in% c("Heatwave")] <- "Heatwave"
 EEdata$ProximateEvent_Type_broad[is.na(EEdata$ProximateEvent_Type_broad)] <- "Other"
 ```
+
+Manipulating the biological response variable.
+```{r biovar}
+EEdata$OrgLevel <- factor(rep(NA,length(EEdata$BiologicalResponseMeasured)),
+                                   levels=c("population", "community", "ecosystem"))
+
+EEdata$OrgLevel[EEdata$BiologicalResponseMeasured %in% c("annual biomass","aboveground biomass","belowground biomass","biomass","summer biomass", "EVI")] <- "ecosystem"
+
+EEdata$OrgLevel[EEdata$BiologicalResponseMeasured %in% c("abundance","annual abundance", "catches or landings", "density", "percent occurrence", "occupancy rate", "percent cover", "summer abundance", "annual Year of Young", "summer Year of Young", "population size structure",  "male survival", "reproduction - nest quantity", "reproduction - ovulation rate", "reproduction - young survival", "body condition", "diet", "growth",  "infection rate", "leaf carbon isotope ratio", "metabolism", "mortality", "ratio of leaf chlorophyl a:b", "rhizome starch levels", "rhizome sugar level", "seawater readiness", "stomach fullness", "stress - cortisol level", "total leaf chlorophyl", "behavior - movement", "carbon assimilation")] <- "population"
+
+
+EEdata$OrgLevel[EEdata$BiologicalResponseMeasured %in% c("annual evenness", "annual richness", "diversity", "functional beta diversity", "functional community structure","phenotypic diversity", "species evenness", "species richness", "summer evenness", "summer richness", "taxonomic beta diversity", "taxonomic diversity", "taxonomic richness", "macroinvertebrate community index", "community composition", "foodweb structure",  "taxonomic community structure", "stability and persistence", "colonization rate", "extinction rate")] <- "community"
+
+```
+
+```{r chemphysmanip}
+
+```
+
 ## Including Plots
 
 You can also embed plots, for example:
